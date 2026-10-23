@@ -93,7 +93,7 @@ to the re-measured test size during extraction.
 
 ## Measured verification result (HAR, Siamese)
 
-| source | EER | FAR | FRR | ROC AUC | n_pairs | n_subjects | embed_dim | params | epochs | artifact |
+| source | EER | FAR@FRR=0.01 | FRR@FAR=0.01 | ROC AUC | n_pairs | n_subjects | embed_dim | params | epochs | artifact |
 |---|---|---|---|---|---|---|---|---|---|---|
 | har | 0.4162 | 0.4162 | 0.4162 | 0.62435346 | 10000 | 9 | 128 | 275712 | 20 | `runs/real/siamese/eval_verification.json` |
 

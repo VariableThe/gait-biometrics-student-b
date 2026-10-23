@@ -22,7 +22,7 @@ import random
 import numpy as np
 import torch
 import yaml
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, roc_curve
 from torch.nn import functional as F
 
 from data.adapter import load_windows
@@ -61,7 +61,7 @@ def classification_metrics(y_true, y_pred, n_classes: int) -> dict:
 
 def _eer_operating_point(labels, scores) -> tuple[float, float, float]:
     """Return (eer, far, frr) at the threshold where FAR ~= FRR.
-
+    
     `labels` are 1 for genuine and 0 for impostor; higher `scores` mean more
     similar. FAR and FRR are linearly interpolated at the crossing.
     """
@@ -76,30 +76,68 @@ def _eer_operating_point(labels, scores) -> tuple[float, float, float]:
             "EER requires both genuine (label 1) and impostor (label 0) samples; "
             f"got {P} genuine / {N} impostor"
         )
-    order = np.argsort(-scores, kind="mergesort")
-    labels = labels[order]
-    tp = np.cumsum(labels == 1)
-    fp = np.cumsum(labels == 0)
-    tpr = np.concatenate([[0.0], tp / P])
-    fpr = np.concatenate([[0.0], fp / N])
+    
+    fpr, tpr, thresholds = roc_curve(labels, scores)
     fnr = 1.0 - tpr
-    diff = fpr - fnr  # non-decreasing as the threshold sweeps down
-    idx = int(np.searchsorted(diff, 0.0, side="left"))
+    
+    diff = fpr - fnr
+    idx = np.searchsorted(diff, 0.0, side="left")
+    
     if idx <= 0:
         far, frr = float(fpr[0]), float(fnr[0])
+        thresh = float(thresholds[0]) if len(thresholds) > 0 else 0.0
     elif idx >= len(diff):
         far, frr = float(fpr[-1]), float(fnr[-1])
+        thresh = float(thresholds[-1]) if len(thresholds) > 0 else 0.0
     else:
         d0, d1 = diff[idx - 1], diff[idx]
         w = 0.0 if d1 == d0 else (0.0 - d0) / (d1 - d0)
         far = float(fpr[idx - 1] + w * (fpr[idx] - fpr[idx - 1]))
         frr = float(fnr[idx - 1] + w * (fnr[idx] - fnr[idx - 1]))
+        thresh = float(thresholds[idx-1] + w * (thresholds[idx] - thresholds[idx-1])) if len(thresholds) > 0 else 0.0
+        
     return 0.5 * (far + frr), far, frr
 
 
 def compute_eer(labels, scores) -> float:
     """Equal Error Rate: the error rate at the threshold where FAR == FRR."""
     return _eer_operating_point(labels, scores)[0]
+
+def _interpolate_rate(fpr, fnr, thresholds, target_rate, target_is_fpr=True) -> tuple[float, float]:
+    """Interpolate to find the threshold and the other rate for a given target_rate.
+    
+    If target_is_fpr is True, we fix FPR = target_rate and find corresponding FNR.
+    Else, we fix FNR = target_rate and find corresponding FPR.
+    """
+    if target_is_fpr:
+        idx = np.searchsorted(fpr, target_rate, side="left")
+        if idx <= 0:
+            return float(thresholds[0]) if len(thresholds) > 0 else 0.0, float(fnr[0])
+        if idx >= len(fpr):
+            return float(thresholds[-1]) if len(thresholds) > 0 else 0.0, float(fnr[-1])
+        
+        f0, f1 = fpr[idx-1], fpr[idx]
+        n0, n1 = fnr[idx-1], fnr[idx]
+        if f1 == f0:
+            return float(thresholds[idx]), float(n0)
+        w = (target_rate - f0) / (f1 - f0)
+        return float(thresholds[idx-1] + w * (thresholds[idx] - thresholds[idx-1])) if len(thresholds) > 0 else 0.0, float(n0 + w * (n1 - n0))
+    else:
+        neg_fnr = -fnr
+        target = -target_rate
+        idx = np.searchsorted(neg_fnr, target, side="left")
+        if idx <= 0:
+            return float(thresholds[0]) if len(thresholds) > 0 else 0.0, float(fpr[0])
+        if idx >= len(neg_fnr):
+            return float(thresholds[-1]) if len(thresholds) > 0 else 0.0, float(fpr[-1])
+        
+        f0, f1 = fpr[idx-1], fpr[idx]
+        n0, n1 = fnr[idx-1], fnr[idx]
+        if n1 == n0:
+            return float(thresholds[idx]), float(f0)
+        w = (target_rate - n0) / (n1 - n0)
+        return float(thresholds[idx-1] + w * (thresholds[idx] - thresholds[idx-1])) if len(thresholds) > 0 else 0.0, float(f0 + w * (f1 - f0))
+
 
 
 def verification_metrics(embeddings, subject_ids, n_pairs: int = 10000,
@@ -160,12 +198,35 @@ def verification_metrics(embeddings, subject_ids, n_pairs: int = 10000,
     dist = (1.0 - (z1 * z2).sum(dim=1)).clamp(min=0.0).numpy()  # cosine distance
     scores = -dist  # similarity: higher = more similar
 
-    eer, far, frr = _eer_operating_point(labels, scores)
+    # EER crossing
+    eer = compute_eer(labels, scores)
+    
+    # Get threshold at EER crossing
+    fpr, tpr, thresholds = roc_curve(labels, scores)
+    fnr = 1.0 - tpr
+    diff = fpr - fnr
+    idx = np.searchsorted(diff, 0.0, side="left")
+    if idx <= 0:
+        eer_thresh = float(thresholds[0]) if len(thresholds) > 0 else 0.0
+    elif idx >= len(diff):
+        eer_thresh = float(thresholds[-1]) if len(thresholds) > 0 else 0.0
+    else:
+        d0, d1 = diff[idx - 1], diff[idx]
+        w = 0.0 if d1 == d0 else (0.0 - d0) / (d1 - d0)
+        eer_thresh = float(thresholds[idx-1] + w * (thresholds[idx] - thresholds[idx-1])) if len(thresholds) > 0 else 0.0
+    
+    # Operating points
+    # FAR = 0.01 -> find FRR
+    thresh_far_01, frr_at_far_01 = _interpolate_rate(fpr, fnr, thresholds, 0.01, target_is_fpr=True)
+    # FRR = 0.01 -> find FAR
+    thresh_frr_01, far_at_frr_01 = _interpolate_rate(fpr, fnr, thresholds, 0.01, target_is_fpr=False)
+    
     roc_auc = float(roc_auc_score(labels, scores))
     return {
         "eer": float(eer),
-        "far": float(far),
-        "frr": float(frr),
+        "eer_threshold": float(eer_thresh),
+        "far_at_frr_0.01": float(far_at_frr_01),
+        "frr_at_far_0.01": float(frr_at_far_01),
         "roc_auc": roc_auc,
         "n_pairs": int(len(labels)),
     }
@@ -313,7 +374,8 @@ def _eval_verification(config: dict, checkpoint: str, subset: int | None,
         f"embed_dim={embed_dim}"
     )
     print(
-        f"eer={metrics['eer']:.4f} far={metrics['far']:.4f} frr={metrics['frr']:.4f} "
+        f"eer={metrics['eer']:.4f} threshold={metrics['eer_threshold']:.4f} "
+        f"far@frr0.01={metrics['far_at_frr_0.01']:.4f} frr@far0.01={metrics['frr_at_far_0.01']:.4f} "
         f"roc_auc={metrics['roc_auc']:.4f} n_pairs={metrics['n_pairs']}"
     )
     print(f"wrote {path}")
