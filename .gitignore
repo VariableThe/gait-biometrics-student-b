@@ -9,3 +9,8 @@ __pycache__/
 *.onnx
 *.onnx.data
 *.pdf
+
+# Public source downloads and per-machine experiment artifacts.
+.dataset-cache/
+artifacts/
+datasets
