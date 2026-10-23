@@ -95,7 +95,9 @@ to the re-measured test size during extraction.
 
 | source | EER | FAR@FRR=0.01 | FRR@FAR=0.01 | ROC AUC | n_pairs | n_subjects | embed_dim | params | epochs | artifact |
 |---|---|---|---|---|---|---|---|---|---|---|
-| har | 0.4162 | 0.4162 | 0.4162 | 0.62435346 | 10000 | 9 | 128 | 275712 | 20 | `runs/real/siamese/eval_verification.json` |
+| har | 0.4162 | — | — | 0.62435346 | 10000 | 9 | 128 | 275712 | 20 | `runs/real/siamese/eval_verification.json` |
+
+> The FAR@FRR=0.01 and FRR@FAR=0.01 operating points were not re-measured here (dataset absent in this environment); re-run `python -m engine.evaluate --task verification` on the HAR checkpoint to populate them.
 
 Training provenance of the checkpoint: `loss_type: triplet`, `margin: 1.0`,
 `seed: 42`, `selection_metric: train_loss`, `best_epoch: 20` (from
