@@ -20,6 +20,8 @@ The [short-window cycle feasibility report](reports/2026-10-25-cycle/README.md) 
 
 The [longer-window recreation and plateau regression](reports/2026-10-25-cycle-length/README.md) preserve 5,120 synthetic comparison rows. Extending 256→768 samples reduces missing pairs from 192→1 per lag rule; half-period aliases remain. An independently checked twelve-fixture plateau regression fixes that one numerical tie case while retaining every gyro failure and alias. This is numerical evidence, with no cycle DEV model or new authentication result.
 
+The [saved-metadata continuity inventory](reports/2026-10-25-support/README.md) rules out fixed 768-sample blocks for this DEV cohort: all 300 trials contain only one such block, and no person has support on both days. Complete continuity segments preserve all fifteen people and expose 33,810 valid rows omitted by the old tiling. Those are raw-support counts; extraction and matched controls need a separate protocol. The full inventory replays in both repositories, with no sensor payload, model or original CALIB/TEST read and no new authentication result.
+
 ## Run immediately
 
 Python 3.14.8 and the existing pinned torch 2.14.1 dependency set were validated on Linux x86_64. Create an isolated environment with uv:
