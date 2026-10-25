@@ -24,6 +24,13 @@ The [25 October follow-up](../reports/2026-10-25-robustness/README.md) adds full
 
 The [canonical orientation result](../reports/2026-10-25-canonical/README.md) nominates a low-FAR DEV alternative with reduced constant-frame rotation sensitivity. EER, gain/noise robustness and some individuals remain worse; no live or TEST threshold changes.
 
+The [paired nuisance-covariance study](../reports/2026-10-25-nuisance/README.md)
+reduces the fixed gain/noise objective FRR from 45.607% to 15.241%, with fourteen
+people improving and one tied. It fails thirteen safety gates: clean error
+rates/EER and some stressed fold/claimant false accepts worsen. Retain the
+canonical baseline; severe noise and the fully rejected DEV person remain open.
+All 200 fits, 440 scores and 541 geometry contexts verify.
+
 ## Limits that software cannot remove
 
 The anonymous legacy WISDM CSVs have no identity mapping; the authentic v1 loader
