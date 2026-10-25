@@ -29,3 +29,11 @@ tests/test_verification_protocol.py
 tests/test_walking_gate.py
 tests/test_window_authentication.py
 tests/test_window_provenance.py
+data/imu_perturbations.py
+engine/auth_simulation.py
+models/lag_covariance.py
+scripts/covariance_robustness_study.py
+tests/test_imu_perturbations.py
+tests/test_auth_simulation.py
+tests/test_lag_covariance.py
+tests/test_covariance_robustness_study.py
