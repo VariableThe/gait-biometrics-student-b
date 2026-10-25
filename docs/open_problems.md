@@ -22,6 +22,8 @@ validation logs. These are opt-in protocols; old metrics are not rewritten.
 
 The [25 October follow-up](../reports/2026-10-25-robustness/README.md) adds full/log-covariance baselines, source-bound sensor perturbations and timed takeover simulation. Neither covariance arm passes promotion; measured synthetic orientation/noise sensitivity remains a research target. The evidence is mirrored from the main repository.
 
+The [canonical orientation result](../reports/2026-10-25-canonical/README.md) nominates a low-FAR DEV alternative with reduced constant-frame rotation sensitivity. EER, gain/noise robustness and some individuals remain worse; no live or TEST threshold changes.
+
 ## Limits that software cannot remove
 
 The anonymous legacy WISDM CSVs have no identity mapping; the authentic v1 loader
