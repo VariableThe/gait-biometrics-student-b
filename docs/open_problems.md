@@ -20,6 +20,8 @@ The [follow-up report](../reports/2026-10-24-engineering/README.md) retains all
 negative/positive DEV evidence, per-person limits, hashes, source snapshots and
 validation logs. These are opt-in protocols; old metrics are not rewritten.
 
+The [25 October follow-up](../reports/2026-10-25-robustness/README.md) adds full/log-covariance baselines, source-bound sensor perturbations and timed takeover simulation. Neither covariance arm passes promotion; measured synthetic orientation/noise sensitivity remains a research target. The evidence is mirrored from the main repository.
+
 ## Limits that software cannot remove
 
 The anonymous legacy WISDM CSVs have no identity mapping; the authentic v1 loader
