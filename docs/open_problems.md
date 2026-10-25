@@ -20,9 +20,19 @@ The [follow-up report](../reports/2026-10-24-engineering/README.md) retains all
 negative/positive DEV evidence, per-person limits, hashes, source snapshots and
 validation logs. These are opt-in protocols; old metrics are not rewritten.
 
-The [25 October follow-up](../reports/2026-10-25-robustness/README.md) adds full/log-covariance baselines, source-bound sensor perturbations and timed takeover simulation. Neither covariance arm passes promotion; measured synthetic orientation/noise sensitivity remains a research target. The evidence is mirrored from the main repository.
+The [25 October follow-up](../reports/2026-10-25-robustness/README.md) adds frozen
+full/log-covariance baselines, deterministic source-bound sensor perturbations
+and timed takeover simulations. Neither covariance arm passes promotion. Probe
+rotation/noise substantially increases rejection; orientation/noise robustness
+remains a measurable research problem using existing data. Simulated recording
+resets demonstrate bounded expiry and preserve short-follow-up censoring.
 
-The [canonical orientation result](../reports/2026-10-25-canonical/README.md) nominates a low-FAR DEV alternative with reduced constant-frame rotation sensitivity. EER, gain/noise robustness and some individuals remain worse; no live or TEST threshold changes.
+The [canonical orientation comparison](../reports/2026-10-25-canonical/README.md)
+nominates Canonical362 under the clean low-FAR gates and substantially reduces
+the measured constant-coordinate-rotation sensitivity. Mean EER worsens, five
+users have higher rejection, and gain/noise sensitivity remains unresolved.
+This is a DEV nomination; real phone relocation, time-varying orientation and
+single-window live thresholds remain unvalidated.
 
 The [paired nuisance-covariance study](../reports/2026-10-25-nuisance/README.md)
 reduces the fixed gain/noise objective FRR from 45.607% to 15.241%, with fourteen
@@ -30,6 +40,14 @@ people improving and one tied. It fails thirteen safety gates: clean error
 rates/EER and some stressed fold/claimant false accepts worsen. Retain the
 canonical baseline; severe noise and the fully rejected DEV person remain open.
 All 200 fits, 440 scores and 541 geometry contexts verify.
+
+The [cycle feasibility follow-up](../reports/2026-10-25-cycle/README.md) tests
+1,280 fixed synthetic windows before fitting a cycle baseline. Short support,
+missing boundaries, degenerate channels and half-stride aliases require a new
+protocol. The [exact gated ROC utility](gated_roc.md) now retains failed claims,
+reports undefined crossings honestly and avoids floating-point equality errors.
+Longer contiguous support and matched validity-gated canonical controls remain
+research options using existing DEV recordings; no cycle DEV fit is claimed.
 
 ## Limits that software cannot remove
 
