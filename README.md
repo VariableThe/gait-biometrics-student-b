@@ -10,6 +10,8 @@ The separate [DEV-only calibration follow-up](reports/2026-10-24-calibration/REA
 
 The [existing-data engineering follow-up](reports/2026-10-24-engineering/README.md) adds recoverable training, strict numeric/setup checks, raw-sample overlap exclusion, a source-bound walking gate, continuous decisions and censored takeover accounting, plus frozen environments and CPU CI. Walking-gate DEV balanced accuracy is 91.22%; it is not an authentication result. The registered claimant-normalization comparison retains raw scoring because normalized alternatives fail the promotion gates. [The remaining-problem register](docs/open_problems.md) distinguishes implemented software from claims needing fresh phone/session evidence.
 
+The [canonical orientation follow-up](reports/2026-10-25-canonical/README.md) mirrors the nominated low-FAR DEV improvement and reduced constant-coordinate-rotation sensitivity. Clean mean FAR is 0.500%, FRR 14.787%; ranking EER worsens and gain/noise weaknesses remain. This is the main repository’s same experiment, not independent replication or a new TEST result.
+
 The [25 October robustness and simulation report](reports/2026-10-25-robustness/README.md) mirrors the main repository’s registered 300-fit covariance comparison, 660 score replays and 297 synthetic policy replays. Neither new representation passes the clean DEV gates. Fixed-threshold rotation/noise stresses expose remaining weaknesses; this mirror is the same experiment, not an independent replication.
 
 ## Run immediately

@@ -37,3 +37,7 @@ tests/test_imu_perturbations.py
 tests/test_auth_simulation.py
 tests/test_lag_covariance.py
 tests/test_covariance_robustness_study.py
+models/gait_canonical.py
+tests/test_gait_canonical.py
+scripts/canonical_orientation_study.py
+tests/test_canonical_orientation_study.py
